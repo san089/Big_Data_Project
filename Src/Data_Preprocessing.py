@@ -5,10 +5,12 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.model_selection import train_test_split
+import re
 import nltk
 nltk.download('stopwords')
 from nltk.stem import SnowballStemmer
 from nltk.corpus import stopwords
+from autocorrect import spell
 
 pd.set_option('display.max_colwidth', 40000)
 
@@ -24,15 +26,19 @@ class process_data:
         self.x_test = None
         self.y_train = None
         self.y_test = None
+        self.print_data_stats()
 
     def print_data_stats(self):
         '''
         Print the Dataset Statistics such as number of rows,columns in the dataset.
         :return: None
         '''
-        print("Total rows in the data : ", self.data.shape[0])
-        print("Number of columns in the data : ", self.data.shape[1])
-        print("The data columns are : ", self.data.columns)
+        print("\n\n######################################################################")
+        print("Records Count: ", self.data.shape[0])
+        print("Column Count : ", self.data.shape[1])
+        print("Columns : ", self.data.columns.values)
+        print("\nCount of FAKE and REAL labels : \n",self.data[['text','label']].groupby('label').count() )
+        print("\n######################################################################")
 
     def stemmer_stop_word_remover(self, text):
         '''
@@ -44,8 +50,10 @@ class process_data:
 
         # Stemming and removing stop words from the text
         language = "english"
+
         stemmer = SnowballStemmer(language)
         stop_words = stopwords.words(language)
+
         filtered_text = [stemmer.stem(word) for word in word_list if stemmer.stem(word) not in stop_words]
         return ' '.join(filtered_text)
 
@@ -54,14 +62,17 @@ class process_data:
         Clean the data and split it on test and training dataframes.
         :return: None
         '''
-        self.data.text = self.data.text.apply(lambda val: val.replace("\n", ""))
+        print("\n\n######################################################################")
+        print("Starting Data Cleaning Process.....")
+        self.data.text = self.data.text.apply(lambda val : re.sub('[,’\'\\n\“.”?:–]', '', val))
+        print("Running spell check, stemming and stop word removal.....")
         self.data['text'] = self.data['text'].apply(self.stemmer_stop_word_remover)
         self.data.dropna(axis = 0 , how = 'any' , inplace = True)
         self.labels = self.data['label']
         self.x_train, self.x_test , self.y_train, self.y_test = train_test_split(self.data['text'], self.labels,
                                                                     test_size=0.33, random_state=123)
-
-
+        print("Data Cleaning Process Completed.")
+        print("\n######################################################################")
 
     def generate_count_vectorizer(self):
         count_vectorizer = CountVectorizer(stop_words='english')

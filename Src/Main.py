@@ -1,11 +1,11 @@
 from Src import Data_Preprocessing
 from Src import plot_helpers
-from Src.Naive_Bayes import Naive_Bayes_Classifier
-from Src.SVM import SVM_Classifier
-from Src.Passive_Agressive import Passive_Agressive_Classifier
+from Src.Classifiers import Naive_Bayes_Classifier, SVM_Classifier, Passive_Agressive_Classifier
+from Src.Time_checker import run_time_stats
 from sklearn import metrics
 import numpy as np
 import warnings
+
 warnings.filterwarnings("ignore")
 
 actual_test_labels = None
@@ -13,14 +13,18 @@ accuracy_dict_naive_bayes = None
 accuracy_dict_SVM = None
 accuracy_dict_PA = None
 
+Naive_obj = None
+SVM_obj = None
+PA_obj = None
+
 def Naive_Bayes_Checker():
     '''
     This method runs the Naive bayes models based on count, tfidf and hash vectorizing.
     :return: return the predictions(numpy array with predicted values) of the best of all (count, tfidf, hash).
     '''
-    global actual_test_labels, accuracy_dict_naive_bayes
+    global actual_test_labels, accuracy_dict_naive_bayes, Naive_obj
     predictions = {'count' : tuple() , 'tfidf' : tuple(), 'hash' : tuple()}
-    n = Naive_Bayes_Classifier()
+    n = Naive_obj = Naive_Bayes_Classifier()
 
     predictions['count'] = n.Count_vectorizer_classifier()
     predictions['tfidf'] = n.Tfif_vectorizer_classifier()
@@ -39,9 +43,9 @@ def SVM_Checker():
     This method runs the Naive bayes models based on count, tfidf and hash vectorizing.
     :return: return the predictions(numpy array with predicted values) of the best of all (count, tfidf, hash).
     '''
-    global accuracy_dict_SVM
+    global accuracy_dict_SVM, SVM_obj
     predictions = {'count' : tuple() , 'tfidf' : tuple(), 'hash' : tuple()}
-    n = SVM_Classifier()
+    n = SVM_obj =SVM_Classifier()
 
     predictions['count'] = n.Count_vectorizer_classifier()
     predictions['tfidf'] = n.Tfif_vectorizer_classifier()
@@ -58,9 +62,9 @@ def Passive_Agressive_Checker():
         This method runs the Naive bayes models based on count, tfidf and hash vectorizing.
         :return: return the predictions(numpy array with predicted values) of the best of all (count, tfidf, hash).
         '''
-    global accuracy_dict_PA
+    global accuracy_dict_PA, PA_obj
     predictions = {'count': tuple(), 'tfidf': tuple(), 'hash': tuple()}
-    n = Passive_Agressive_Classifier()
+    n = PA_obj =Passive_Agressive_Classifier()
 
     predictions['count'] = n.Count_vectorizer_classifier()
     predictions['tfidf'] = n.Tfif_vectorizer_classifier()
@@ -80,9 +84,9 @@ def analysis(model,predictions):
     accuracy_for_tfidf = metrics.accuracy_score(predictions['tfidf'][0] , predictions['tfidf'][1])
     accuracy_for_hash = metrics.accuracy_score(predictions['hash'][0] , predictions['hash'][1])
 
-    print("Model accuracy with Count Vectorizer : ", accuracy_for_count)
-    print("Model accuracy with TFIDF Vectorizer : ", accuracy_for_tfidf)
-    print("Model accuracy with Hash Vectorizer : ", accuracy_for_hash)
+    print("Model accuracy with Count Vectorizer : ", accuracy_for_count*100)
+    print("Model accuracy with TFIDF Vectorizer : ", accuracy_for_tfidf*100)
+    print("Model accuracy with Hash Vectorizer : ", accuracy_for_hash*100)
 
     print("\n######################################################################")
     return {'count' : accuracy_for_count , 'tfidf' : accuracy_for_tfidf, 'hash' : accuracy_for_hash}
@@ -99,6 +103,9 @@ if __name__ == "__main__":
     final_predicts = voting_classifier(Naive_bayes_max_predict_result, SVM_max_predict_result, Passive_max_predict_result)
 
     print("Final Accuracy is : ", metrics.accuracy_score(actual_test_labels , final_predicts))
+
+    print("---------------------------------------------------------------------------------------")
+    run_time_stats(Naive_obj, SVM_obj, PA_obj)
 
     #Plotting bar chart for the accuracy
     plot_helpers.generate_plot(accuracy_dict_naive_bayes, accuracy_dict_SVM, accuracy_dict_PA)
