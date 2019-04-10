@@ -46,7 +46,7 @@ class process_data:
         :param text: String to be processed
         :return: return string after processing is completed.
         '''
-        word_list = text.split(" ")
+        word_list = set(text.split(" "))
 
         # Stemming and removing stop words from the text
         language = "english"
