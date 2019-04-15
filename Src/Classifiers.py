@@ -141,7 +141,7 @@ class SVM_Classifier:
         return (y_test, pred)
 
     def classify(self, x_train, x_test, y_train, y_test):
-        model = LinearSVC(C=1.0 ,penalty='l1', max_iter=3000, dual= False)
+        model = LinearSVC( C = 0.1 , loss='hinge', penalty='l2', max_iter=1000, dual= True)
         model.fit(x_train, y_train)
         pred = model.predict(x_test)
         return pred
@@ -208,7 +208,7 @@ class Passive_Agressive_Classifier:
         return (y_test, pred)
 
     def classify(self, x_train, x_test, y_train, y_test):
-        model = PassiveAggressiveClassifier(max_iter=50)
+        model = PassiveAggressiveClassifier(max_iter=50, C = 0.7)
         model.fit(x_train, y_train)
         pred = model.predict(x_test)
         return pred

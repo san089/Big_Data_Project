@@ -75,19 +75,19 @@ class process_data:
         print("\n######################################################################")
 
     def generate_count_vectorizer(self):
-        count_vectorizer = CountVectorizer(stop_words='english')
+        count_vectorizer = CountVectorizer(stop_words='english', ngram_range=(1, 2) , max_df = 0.5, min_df=2, lowercase= True)
         count_train = count_vectorizer.fit_transform(self.x_train)
         count_test = count_vectorizer.transform(self.x_test)
         return (count_train , count_test)
 
     def generate_tfidf_vectorizer(self):
-        tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=0.2, ngram_range=(1, 4))
+        tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1, 2) , max_df = 0.5, min_df=2, lowercase= True)
         tfidf_train = tfidf_vectorizer.fit_transform(self.x_train)
         tfidf_test = tfidf_vectorizer.transform(self.x_test)
         return (tfidf_train, tfidf_test)
 
     def generate_hashing_vectorizer(self):
-        hash_vectorizer = HashingVectorizer(stop_words='english', non_negative=True)
+        hash_vectorizer = HashingVectorizer(stop_words='english', lowercase=True, ngram_range=(1, 2), non_negative=True)
         hash_train = hash_vectorizer.fit_transform(self.x_train)
         hash_test = hash_vectorizer.transform(self.x_test)
         return (hash_train, hash_test)
