@@ -13,6 +13,7 @@ Spell checked all the documents
 Removed the Stop Words
 Vectorized the documents.
 
+Vectorization
 For Vectorization we used - Count Vectorizer, TFIDF Vectorizer, Hash Vectorizer.
 
 For Classification prurpose we Used: Multinomial Naive Bayes, Support Vector Machine ( LinearSVC ), PassiveAgressiveClassifier.
